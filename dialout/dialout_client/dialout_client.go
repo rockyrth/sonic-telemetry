@@ -345,6 +345,17 @@ restart: //Remote server might go down, in that case we restart with next destin
 	}
 	cs.cMu.Unlock()
 
+	// deal connection receive error
+	go func () {
+		for {
+			_, err := pub.Recv()
+			if err != nil {
+				log.V(2).Infof("%v recv err %v", cs.name, err)
+				return
+			}
+		}
+	}()
+
 	switch cs.reportType {
 	case Periodic:
 		for {
